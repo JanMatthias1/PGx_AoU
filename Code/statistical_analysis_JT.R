@@ -32,7 +32,7 @@ drug_dictionary <- list(
              "propranolol", "darifenacin", "vortioxetine", "viloxazine", "nortriptyline",
              "trimipramine", "amphetamine", "iloperidone", "nebivolol", "upadacitinib",
              "arformoterol", "pimozide", "imipramine", "formoterol", "aripiprazole lauroxil",
-             "pitolisant", "quinidine", "dronedarone", "Opium derivatives and expectorants",
+             "pitolisant", "quinidine", "dronedarone", "opium",
              "desvenlafaxine", "mirabegron", "zuclopenthixol", "thioridazine", "escitalopram",
              "propafenone", "flibanserin", "primaquine", "duloxetine", "atomoxetine", "cevimeline",
              "tolterodine", "timolol", "tamoxifen", "ondansetron", "amitriptyline", "galantamine",
