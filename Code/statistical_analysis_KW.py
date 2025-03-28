@@ -203,7 +203,7 @@ for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]
                 
                 # Compute summary statistics **after filtering**
                 if not mean_dose_per_day.empty:
-                    summary_stats= update_summary_statistics(mean_dose_per_day, CYP_drug, CYP_gene, drug_name, summary_stats)
+                    summary_stats= update_summary_statistics(mean_dose_per_day, CYP_drug_modified, CYP_gene, drug_name, summary_stats)
             
                 # ------- Covariate adjusted Drug Dosage 
                 mean_dose_per_day, model = calculate_adjusted_dosage(mean_dose_per_day, pca_columns) 
