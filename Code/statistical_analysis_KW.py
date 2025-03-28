@@ -207,10 +207,6 @@ for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]
             
                 # ------- Covariate adjusted Drug Dosage 
                 mean_dose_per_day, model = calculate_adjusted_dosage(mean_dose_per_day, pca_columns) 
-
-                # Store p-values and beta coefficients
-                feature_importance = store_feature_importance(model, CYP_drug, CYP_gene, drug_name, pca_columns, 
-                                                              feature_importance)
             
                 data_to_export = pd.concat([data_to_export, mean_dose_per_day], ignore_index=True)
                 
