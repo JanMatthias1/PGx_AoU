@@ -94,7 +94,7 @@ def find_metabolizing_enzyme(drug_name, CYP_gene, CYP_drug, drug_to_enzymes):
     else:
         return CYP_drug
 
-def remove_outliers(df, column="dose_per_day", lower_quantile=0.30, upper_quantile=0.70, iqr_multiplier=1.5):
+def remove_outliers(df, column="dose_per_day", lower_quantile=0.25, upper_quantile=0.75, iqr_multiplier=1.5):
     """remove outlier in drug dosage data. """
     Q1 = df[column].quantile(lower_quantile)
     Q3 = df[column].quantile(upper_quantile)
