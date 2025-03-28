@@ -39,11 +39,8 @@ df = clean_pgx_data('')
 number_pca = 16
 pca_columns = [f"pca_feature_{i}" for i in range(1, number_pca + 1)]
 
-df["drug_exposure_end_datetime"] = pd.to_datetime(df["drug_exposure_end_datetime"], errors='coerce')
-
 # these features are needed for all CYPs
-df = df.dropna(subset=["person_id", "sex_at_birth", "BMI", "age_calculated_years","drug_exposure_end_datetime", 
-                       "dose_per_day"] + pca_columns)
+df = df.dropna(subset=["person_id", "sex_at_birth", "BMI", "age_calculated_years", "dose_per_day"] + pca_columns)
 
 #---------------- DATA FRAMES CREATION ------------
 
@@ -162,13 +159,9 @@ for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]
             valid_persons = df_first_drug['person_id'].value_counts()
             valid_persons = valid_persons[valid_persons >= 5].index
             df_filtered = df_first_drug[df_first_drug['person_id'].isin(valid_persons)]
-
-            # Sort and take the last five observations per person
-            df_filtered = df_filtered.sort_values(by=["person_id", "drug_exposure_end_datetime"])
-            last_five = df_filtered.groupby("person_id").tail(5)
             
             # Calculate mean dose per day for these last five observations
-            mean_dose_per_day = last_five.groupby("person_id")["dose_per_day"].mean().reset_index()
+            mean_dose_per_day = df_filtered.groupby("person_id")["dose_per_day"].mean().reset_index()
 
             # Columns to merge
             merge_cols = ["person_id", "metabolizer_type", "sex_at_birth", "BMI", "age_calculated_years"] + pca_columns
