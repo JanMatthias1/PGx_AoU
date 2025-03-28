@@ -29,6 +29,7 @@ from sklearn.preprocessing import StandardScaler
 from collections import defaultdict
 import re
 import random
+random.seed(42)
 
 
 # ---------- IMPORTING DRUG DOSAGE DATA -----------
