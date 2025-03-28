@@ -175,8 +175,8 @@ for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]
             mean_dose_per_day = mean_dose_per_day[mean_dose_per_day["dose_per_day"] != 0]
             # Drop duplicates again (ensure only last observation per person is kept)
             
-            mean_dose_per_day= remove_outliers(mean_dose_per_day, column="dose_per_day", lower_quantile=0.30, 
-                                               upper_quantile=0.70, iqr_multiplier=1.5)
+            mean_dose_per_day= remove_outliers(mean_dose_per_day, column="dose_per_day", lower_quantile=0.25, 
+                                               upper_quantile=0.75, iqr_multiplier=1.5)
             
             mean_dose_per_day[["drug_name", "gene_name", "drug_CYP"]] = drug_name, CYP_gene, CYP_drug_modified
             
