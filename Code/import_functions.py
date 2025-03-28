@@ -59,8 +59,6 @@ def clean_pgx_data(file_path):
 
     # Convert 'sex_at_birth' to numeric
     df['sex_at_birth'] = pd.to_numeric(df['sex_at_birth'], errors='coerce')
-    
-    df=df.drop_duplicates()
 
     return df
 
