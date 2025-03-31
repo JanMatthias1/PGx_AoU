@@ -65,7 +65,7 @@ results <- data.frame(
   CYP_drug = character(),  # Enzyme that metabolizes the drug 
   CYP_gene = character(),  # Gene of the phenotype
   drug_name = character(),
-  metabolizer_grouping = character(),  # "3-group" or "5-group"
+  metabolizer_grouping = character(),  # "3-group" 
   p_value = numeric(),
   stat_test = numeric(),
   number_of_metabolizer = integer(),
