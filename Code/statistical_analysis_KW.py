@@ -154,7 +154,6 @@ for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]
 
             # Create a dataframe of patients on the drug
             df_first_drug = df_copy[df_copy['drug_name'].str.contains(pattern, case=False, na=False)].copy()
-            df_first_drug = df_first_drug.drop_duplicates()
             
             # Optimize filtering using .value_counts()
             valid_persons = df_first_drug['person_id'].value_counts()
