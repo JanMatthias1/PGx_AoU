@@ -49,7 +49,7 @@ data_stat = pd.DataFrame(columns=["CYP_drug", "CYP_gene", "drug_name", "p_value"
                                   "number_of_metabolizer", "number_people", 
                                   "statistical_test", "metabolizer_groups"])
 
-summary_stats = pd.DataFrame(columns=["CYP_drug", "CYP_gene", "drug_name", "mean_dose", "SD_dose", 
+summary_stats = pd.DataFrame(columns=["CYP_drug", "CYP_gene", "drug_name", "median_dose", "SD_dose", 
                                       "min_dose", "max_dose"])
 
 data_to_export = pd.DataFrame()
