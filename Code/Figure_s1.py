@@ -15,7 +15,7 @@ bold_combinations = {
 
 df["Label"] = df["CYP_gene"] + " - " + df["drug_name"]
 
-# median
+# sort by median value
 df_sorted = df.sort_values("median_dose", ascending=False).reset_index(drop=True)
 
 fig, ax = plt.subplots(figsize=(10, 14))
