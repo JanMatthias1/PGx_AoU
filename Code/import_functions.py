@@ -124,12 +124,12 @@ def calculate_adjusted_dosage(mean_dose_per_day, pca_columns):
 
 def update_summary_statistics(mean_dose_per_day, CYP_drug, CYP_gene, drug_name, summary_stats):
     """ Compute and store summary statistics for a given drug and enzyme pair. """
-    mean_dose = mean_dose_per_day["dose_per_day"].mean()
+    median_dose = mean_dose_per_day["dose_per_day"].median()
     sd_dose = mean_dose_per_day["dose_per_day"].std()
     min_dose = mean_dose_per_day["dose_per_day"].min()
     max_dose = mean_dose_per_day["dose_per_day"].max()
     
-    summary_stats.loc[len(summary_stats)] = [CYP_drug, CYP_gene, drug_name, mean_dose, sd_dose, min_dose, max_dose]
+    summary_stats.loc[len(summary_stats)] = [CYP_drug, CYP_gene, drug_name, median_dose, sd_dose, min_dose, max_dose]
     
     return summary_stats
 
