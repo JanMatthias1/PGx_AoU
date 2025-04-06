@@ -56,9 +56,9 @@ def drug_dosage_processing(df_new):
 
     # Define patterns
     patterns = {
-        "ml_mgml": r"(?P<volume>\d+)\s+ML\s+(?P<drug_name>.+?)\s+(?P<concentration>\d*\.?\d+)\s+MG/ML\s+(?P<drug_type>.+)",
-        "mg_actuat": r"(?P<drug_name>.+?)\s+(?P<drug_dose>\d*\.?\d+)\s+MG/ACTUAT\s+(?P<drug_type>.+)",
-        "mg": r"(?P<drug_name>.+?)\s+(?P<drug_dose>\d*\.?\d+)\s+MG\s+(?P<drug_type>.+)"
+    "ml_mgml": r"(?P<volume>\d*\.?\d+)\s+ML\s+(?P<drug_name>.+?)\s+(?P<concentration>\d*\.?\d+)\s+MG/ML\s+(?P<drug_type>.+)",
+    "mg_actuat": r"(?P<drug_name>.+?)\s+(?P<drug_dose>\d*\.?\d+)\s+MG/ACTUAT\s+(?P<drug_type>.+)",
+    "mg": r"(?P<drug_name>.+?)\s+(?P<drug_dose>\d*\.?\d+)\s+MG\s+(?P<drug_type>.+)"
     }
 
     # Apply ML MG/ML pattern
