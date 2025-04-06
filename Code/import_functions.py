@@ -48,7 +48,7 @@ def clean_pgx_data(file_path):
     df = df[~df['dose_per_day'].isin([float('inf'), 0])]
 
     # Remove rows where 'standard_concept_name_drug' contains '/'
-    df = df[~(df['standard_concept_name_drug'].str.contains('/', na=False) & ~df['standard_concept_name_drug'].str.contains('MG/ML', na=False))]
+    df = df[~df['standard_concept_name_drug'].str.contains(r'\s/\s', na=False)]
 
     # Map 'sex_at_birth' values to numeric
     df['sex_at_birth'] = df['sex_at_birth'].replace({'Female': 0.0, 'Male': 1.0})
