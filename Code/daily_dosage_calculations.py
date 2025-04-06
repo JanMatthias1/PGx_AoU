@@ -22,85 +22,100 @@ import re
 import random
 
 def drug_dosage_processing(df_new):
-    """"
-    Calculates the dose_per_day for each prescription
+    """
+    Calculates the dose_per_day for each prescription.
 
     Parameters:
-        df_new (pd.DataFrame): The DataFrame containing prescription data. It must include the following columns:
-                            - standard_concept_name: Name of the prescribed drug.
-                            - quantity: Total quantity of the drug dispensed.
-                            - days_supply: Number of days the prescription is intended to last.
+        df_new (pd.DataFrame): DataFrame with prescription data including:
+            - standard_concept_name
+            - quantity
+            - days_supply
+
     Returns:
-        df_new (pd.DataFrame): The input DataFrame with an additional column, dose_per_day, representing the calculated daily dosage for each prescription.
+        pd.DataFrame: Modified DataFrame with:
+            - drug_name
+            - drug_dose
+            - drug_type
+            - quantity_per_day
+            - dose_per_day
     """
-    # DATA PREPROCESSING
-    df_new["standard_concept_name_drug"] = df_new["standard_concept_name"]
-    df_new = df_new.drop(columns=["standard_concept_name"])
-    df_new = df_new.dropna(subset=["quantity", "days_supply"])
+    # Copy and cleanup
+    df = df_new.copy()
+    df.rename(columns={"standard_concept_name": "standard_concept_name_drug"}, inplace=True)
+    df.dropna(subset=["quantity", "days_supply"], inplace=True)
 
-    # Convert 'quantity' and 'days_supply' data to numeric format
-    df_new.loc[:, 'quantity'] = pd.to_numeric(df_new['quantity'], errors='coerce')
-    df_new.loc[:, 'days_supply'] = pd.to_numeric(df_new['days_supply'], errors='coerce')
+    # Convert columns to numeric
+    df["quantity"] = pd.to_numeric(df["quantity"], errors='coerce')
+    df["days_supply"] = pd.to_numeric(df["days_supply"], errors='coerce')
 
-    # Remove rows where 'days_supply' is 1 
-    df_new = df_new[df_new['days_supply'] != 1]
+    # Remove rows with 1-day supply
+    df = df[df["days_supply"] != 1]
 
-    # Pattern 1: ML + MG/ML cases (e.g., "10 ML fosphenytoin sodium 75 MG/ML Injection")
-    pattern_ml_mgml = r"(?P<volume>\d+)\s+ML\s+(?P<drug_name>.+?)\s+(?P<concentration>\d*\.?\d+)\s+MG/ML\s+(?P<drug_type>.+)"
+    # Init columns
+    df[["drug_name", "drug_dose", "drug_type"]] = None
 
-    # Pattern 2: Standard MG cases (e.g., "aspirin 500 MG Tablet")
-    pattern_mg = r"(?P<drug_name>.+?)\s+(?P<drug_dose>\d*\.?\d+)\s+MG\s+(?P<drug_type>.+)"
+    # Define patterns
+    patterns = {
+        "ml_mgml": r"(?P<volume>\d+)\s+ML\s+(?P<drug_name>.+?)\s+(?P<concentration>\d*\.?\d+)\s+MG/ML\s+(?P<drug_type>.+)",
+        "mg_actuat": r"(?P<drug_name>.+?)\s+(?P<drug_dose>\d*\.?\d+)\s+MG/ACTUAT\s+(?P<drug_type>.+)",
+        "mg": r"(?P<drug_name>.+?)\s+(?P<drug_dose>\d*\.?\d+)\s+MG\s+(?P<drug_type>.+)"
+    }
 
-    # Create empty columns
-    df_new["drug_name"], df_new["drug_dose"], df_new["drug_type"] = None, None, None
+    # Apply ML MG/ML pattern
+    mask_ml = df["standard_concept_name_drug"].str.contains(r"\d+\s+ML.*\d+\s+MG/ML", regex=True, na=False)
+    df_ml = df.loc[mask_ml, "standard_concept_name_drug"].str.extract(patterns["ml_mgml"])
+    df_ml["volume"] = pd.to_numeric(df_ml["volume"], errors='coerce')
+    df_ml["concentration"] = pd.to_numeric(df_ml["concentration"], errors='coerce')
+    df.loc[mask_ml, "drug_dose"] = df_ml["volume"] * df_ml["concentration"]
+    df.loc[mask_ml, ["drug_name", "drug_type"]] = df_ml[["drug_name", "drug_type"]]
 
-    # Identify rows that match the ML + MG/ML pattern
-    mask_ml_mgml = df_new["standard_concept_name_drug"].str.contains(r"\d+\s+ML.*\d+\s+MG/ML", regex=True, na=False)
+    # Apply MG/ACTUAT pattern
+    mask_actuat = df["standard_concept_name_drug"].str.contains(r"\d*\.?\d+\s+MG/ACTUAT", regex=True, na=False)
+    df_actuat = df.loc[mask_actuat, "standard_concept_name_drug"].str.extract(patterns["mg_actuat"])
+    df.loc[mask_actuat, ["drug_name", "drug_dose", "drug_type"]] = df_actuat
 
-    # Extract ML + MG/ML data
-    df_ml_mgml = df_new.loc[mask_ml_mgml, "standard_concept_name_drug"].str.extract(pattern_ml_mgml)
+    # Extract ACTUAT multiplier if present
+    df["actuat_multiplier"] = pd.to_numeric(
+        df.loc[mask_actuat, "standard_concept_name_drug"].str.extract(r"^(\d+)\s+ACTUAT")[0],
+        errors='coerce'
+    )
+    # Drop invalid ACTUAT rows
+    df = df[~(mask_actuat & df["actuat_multiplier"].isna())]
+    mask_actuat = df["standard_concept_name_drug"].str.contains(r"\d*\.?\d+\s+MG/ACTUAT", regex=True, na=False)  # recompute
 
-    # Convert numeric fields
-    df_ml_mgml["volume"] = pd.to_numeric(df_ml_mgml["volume"], errors='coerce')
-    df_ml_mgml["concentration"] = pd.to_numeric(df_ml_mgml["concentration"], errors='coerce')
-
-    # Compute total MG where applicable and store in drug_dose
-    df_ml_mgml["drug_dose"] = df_ml_mgml["volume"] * df_ml_mgml["concentration"]
-
-    # Assign extracted values for ML + MG/ML rows
-    df_new.loc[mask_ml_mgml, ["drug_name", "drug_dose", "drug_type"]] = df_ml_mgml[["drug_name", "drug_dose", "drug_type"]]
-
-    # Apply standard MG pattern for remaining rows
-    mask_mg = ~mask_ml_mgml  # Select rows that do NOT match ML+MG/ML pattern
-    df_mg = df_new.loc[mask_mg, "standard_concept_name_drug"].str.extract(pattern_mg)
-
-    # Assign extracted values for MG-only rows
-    df_new.loc[mask_mg, ["drug_name", "drug_dose", "drug_type"]] = df_mg
-
-    # Convert drug_dose to numeric for consistency
-    df_new["drug_dose"] = pd.to_numeric(df_new["drug_dose"], errors='coerce')
-
-    # Create 'quantity_per_day' by dividing 'quantity' by 'days_supply', leaving NaN for missing or zero values
-    df_new.loc[:, 'quantity_per_day'] = np.where(
-        df_new[['quantity', 'days_supply']].notna().all(axis=1),
-        df_new['quantity'] / df_new['days_supply'],
-        np.nan
+    # Adjust quantity
+    df["adjusted_quantity"] = np.where(
+        mask_actuat,
+        df["quantity"] * df["actuat_multiplier"],
+        df["quantity"]
     )
 
-    # Convert 'drug_dose' to numeric, retaining NaN values
-    df_new.loc[:, 'drug_dose'] = pd.to_numeric(df_new['drug_dose'], errors='coerce')
+    # Apply MG pattern to remaining rows
+    remaining_mask = ~(mask_ml | mask_actuat)
+    df_remaining = df.loc[remaining_mask, "standard_concept_name_drug"].str.extract(patterns["mg"])
+    df.loc[remaining_mask, ["drug_name", "drug_dose", "drug_type"]] = df_remaining
+
+    # Convert drug_dose to numeric
+    df["drug_dose"] = pd.to_numeric(df["drug_dose"], errors='coerce')
+    
+    # Create 'quantity_per_day' by dividing 'quantity' by 'days_supply', leaving NaN for missing or zero values
+    df.loc[:, 'quantity_per_day'] = np.where(
+        df[['quantity', 'days_supply']].notna().all(axis=1),
+        df['quantity'] / df['days_supply'],
+        np.nan
+    )
 
     # Calculate 'dose_per_day' as 'drug_dose' * 'quantity_per_day', leaving NaN if any component is missing
-    df_new.loc[:, 'dose_per_day'] = np.where(
-        df_new[['drug_dose', 'quantity_per_day']].notna().all(axis=1),
-        df_new['drug_dose'] * df_new['quantity_per_day'],
+    df.loc[:, 'dose_per_day'] = np.where(
+        df[['drug_dose', 'quantity_per_day']].notna().all(axis=1),
+        df['drug_dose'] * df['quantity_per_day'],
         np.nan
     )
 
-    # Drop rows where 'drug_name' is NaN (previously handled incorrectly)
-    df_new = df_new.dropna(subset=['drug_name'])
+    # Drop rows without parsed drug name
+    df.dropna(subset=["drug_name"], inplace=True)
 
-    # Remove infinite values resulting from division errors
-    df_new.replace([np.inf, -np.inf], np.nan, inplace=True)
+    # Replace inf with NaN
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
-    return df_new
+    return df
