@@ -100,8 +100,8 @@ def drug_dosage_processing(df_new):
     
     # Create 'quantity_per_day' by dividing 'quantity' by 'days_supply', leaving NaN for missing or zero values
     df.loc[:, 'quantity_per_day'] = np.where(
-        df[['quantity', 'days_supply']].notna().all(axis=1),
-        df['quantity'] / df['days_supply'],
+        df[['adjusted_quantity', 'days_supply']].notna().all(axis=1),
+        df['adjusted_quantity'] / df['days_supply'],
         np.nan
     )
 
@@ -119,3 +119,4 @@ def drug_dosage_processing(df_new):
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
     return df
+
