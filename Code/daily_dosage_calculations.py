@@ -117,6 +117,9 @@ def drug_dosage_processing(df_new):
 
     # Replace inf with NaN
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    
+    # Remove rows with any negative values in relevant numeric columns
+    numeric_cols = ["quantity", "days_supply", "drug_dose", "quantity_per_day", "dose_per_day", "adjusted_quantity", "actuat_multiplier"]
+    df = df[~(df[numeric_cols] < 0).any(axis=1)]
 
     return df
-
