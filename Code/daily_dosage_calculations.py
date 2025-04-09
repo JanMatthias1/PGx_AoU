@@ -19,7 +19,12 @@ from statsmodels.stats.proportion import proportions_ztest
 from sklearn.preprocessing import StandardScaler
 from collections import defaultdict
 import re
+
 import random
+random.seed(42)
+
+seed = 42
+np.random.seed(seed)
 
 def drug_dosage_processing(df_new):
     """
