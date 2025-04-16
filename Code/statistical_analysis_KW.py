@@ -14,6 +14,7 @@ from import_functions import calculate_adjusted_dosage
 from import_functions import update_summary_statistics
 from import_functions import store_feature_importance
 from import_functions import store_statistical_results
+from import_functions import process_person
 
 import pandas as pd
 import numpy as np
@@ -123,18 +124,19 @@ for enzyme, drugs in drug_dictionary.items():
 
 # ----------------- STATISTICAL TESTING ----------------
 
-for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]):    
- 
+# ----------------- STATISTICAL TESTING ----------------
+for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]):
+
     print(CYP_gene, "CYP____________")
     
     # --- Filtering for CYP and dropping null values
     df_copy=df.copy()
-    df_copy["metabolizer_type"] = df[CYP_gene]
+    df_copy["metabolizer_type"] = df_copy[CYP_gene]
     df_copy = df_copy.dropna(subset=["metabolizer_type"])
     
     # Track tested drugs to avoid duplicate tests
     tested_drugs = set()
-    
+
     for CYP_drug in ["CYP1A2", "CYP27A1", "CYP2A6", "CYP2B6", "CYP2C19", "CYP2C9", "CYP2D6", 
                  "CYP3A4", "CYP3A5", "CYP7A1"]:
            
@@ -158,28 +160,34 @@ for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]
 
             # Create a dataframe of patients on the drug
             df_first_drug = df_copy[df_copy['drug_name'].str.contains(pattern, case=False, na=False)].copy()
-            
+        
+            # ------------- filter for at least 5 observations
             # Optimize filtering using .value_counts()
             valid_persons = df_first_drug['person_id'].value_counts()
             valid_persons = valid_persons[valid_persons >= 5].index
             df_filtered = df_first_drug[df_first_drug['person_id'].isin(valid_persons)]
-            
-            # Calculate mean dose per day for these last five observations
-            mean_dose_per_day = df_filtered.groupby("person_id")["dose_per_day"].mean().reset_index()
+
+            # Apply per person
+            final_rows = df_filtered.groupby("person_id").apply(process_person).reset_index(drop=True)
+
+            # Now compute mean dose per person from these cleaned 5 observations
+            mean_dose_per_day_five = final_rows.groupby("person_id")["dose_per_day"].mean().round(10).reset_index()
 
             # Columns to merge
             merge_cols = ["person_id", "metabolizer_type", "sex_at_birth", "BMI", "age_calculated_years"] + pca_columns
     
-            # Merge additional information
-            mean_dose_per_day = mean_dose_per_day.merge(df_first_drug[merge_cols].drop_duplicates(), 
-                                                        on="person_id", how="left").dropna()
-            
+            # Merge additional information     
+            mean_dose_per_day = mean_dose_per_day_five.merge(df_first_drug[merge_cols].drop_duplicates(subset="person_id"),
+                                                             on="person_id", how="left")
+
             # 2) ---------- REMOVING OUTLIERS FROM THE OBSERVATIONS 
             mean_dose_per_day = mean_dose_per_day[mean_dose_per_day["dose_per_day"] != 0]
             # Drop duplicates again (ensure only last observation per person is kept)
             
             mean_dose_per_day= remove_outliers(mean_dose_per_day, column="dose_per_day", lower_quantile=0.25, 
                                                upper_quantile=0.75, iqr_multiplier=1.5)
+            
+            mean_dose_per_day = mean_dose_per_day.sort_values("person_id").reset_index(drop=True)
             
             mean_dose_per_day[["drug_name", "gene_name", "drug_CYP"]] = drug_name, CYP_gene, CYP_drug_modified
             
@@ -208,14 +216,14 @@ for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]
                 # Compute summary statistics **after filtering**
                 if not mean_dose_per_day.empty:
                     summary_stats= update_summary_statistics(mean_dose_per_day, CYP_drug_modified, CYP_gene, drug_name, summary_stats)
-            
+        
                 # ------- Covariate adjusted Drug Dosage 
                 mean_dose_per_day, model = calculate_adjusted_dosage(mean_dose_per_day, pca_columns) 
 
                 # Store p-values and beta coefficients
                 feature_importance = store_feature_importance(model, CYP_drug_modified, CYP_gene, drug_name, pca_columns, 
                                                               feature_importance)
-              
+            
                 data_to_export = pd.concat([data_to_export, mean_dose_per_day], ignore_index=True)
                 
                 # Count unique metabolizer groups
