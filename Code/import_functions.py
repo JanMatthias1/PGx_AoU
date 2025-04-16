@@ -76,18 +76,6 @@ def perform_kruskal_test(grouped_data, expected_groups):
         return round(p_value, 5), round(statistic, 5),  "3_KW"
     return "Skipped", "Skipped", "3_KW"
 
-def perform_wilcoxon_test(grouped_data, expected_groups):
-    """
-    Perform a Wilcoxon rank-sum test if there are exactly two groups with sufficient sample size.
-    """
-    groups = [group["Adjusted_Dosage"].values for _, group in grouped_data]
-
-    if len(groups) == expected_groups and all(len(g) >= 10 for g in groups):  # Ensure exactly two groups with enough data
-        statistic, p_value = stats.ranksums(*groups)
-        return round(p_value, 5), round(statistic, 5), "2_Wilcoxon"
-    
-    return "Skipped", "Skipped", "2_Wilcoxon"
-
 def find_metabolizing_enzyme(drug_name, CYP_gene, CYP_drug, drug_to_enzymes):
     """ Determine the metabolizing enzyme(s) for a given drug. """
     metabolizing_enzymes = drug_to_enzymes[drug_name]
@@ -159,6 +147,35 @@ def store_feature_importance(model, CYP_drug, CYP_gene, drug_name, pca_columns, 
 
     # Append new row to feature_importance DataFrame
     return pd.concat([feature_importance, pd.DataFrame([new_row])], ignore_index=True)
+
+def process_person(df):
+    df_sorted = df.sort_values("drug_exposure_end_datetime", ascending=False).reset_index(drop=True)
+    
+    if len(df_sorted) < 5:
+        return None
+
+    # First 4 observations — always kept as-is
+    first_four = df_sorted.iloc[:4]
+
+    # Slice from 5th onward
+    fifth_onward = df_sorted.iloc[4:]
+
+    if fifth_onward.empty:
+        return None
+
+    # Get the datetime of the 5th observation
+    ref_time = fifth_onward.iloc[0]["drug_exposure_end_datetime"]
+
+    # Only check for ties from the 5th observation onward
+    tied_rows = fifth_onward[fifth_onward["drug_exposure_end_datetime"] == ref_time]
+
+    # Combine first four with all tied rows (5th, 6th, etc. if they share the same ref_time)
+    final_rows = pd.concat([
+        first_four[["person_id", "dose_per_day", "drug_exposure_end_datetime"]],
+        tied_rows[["person_id", "dose_per_day", "drug_exposure_end_datetime"]]
+    ], ignore_index=True)
+
+    return final_rows
 
 def store_statistical_results(mean_dose_per_day, CYP_drug_modified, CYP_gene, drug_name, data_stat):
     """ Perform Kruskal-Wallis test and store statistical results if sufficient data is available. """
