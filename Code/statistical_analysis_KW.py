@@ -45,8 +45,11 @@ df = clean_pgx_data('')
 number_pca = 16
 pca_columns = [f"pca_feature_{i}" for i in range(1, number_pca + 1)]
 
+df["drug_exposure_end_datetime"] = pd.to_datetime(df["drug_exposure_end_datetime"], errors='coerce')
+
 # these features are needed for all CYPs
-df = df.dropna(subset=["person_id", "sex_at_birth", "BMI", "age_calculated_years", "dose_per_day"] + pca_columns)
+df = df.dropna(subset=["person_id", "sex_at_birth", "BMI", "age_calculated_years", 
+                       "dose_per_day", "drug_exposure_end_datetime"] + pca_columns)
 
 #---------------- DATA FRAMES CREATION ------------
 
