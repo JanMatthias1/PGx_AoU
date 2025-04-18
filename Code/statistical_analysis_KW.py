@@ -127,7 +127,6 @@ for enzyme, drugs in drug_dictionary.items():
 
 # ----------------- STATISTICAL TESTING ----------------
 
-# ----------------- STATISTICAL TESTING ----------------
 for j, CYP_gene in enumerate(["CYP2D6", "CYP2C19", "CYP2C9", "CYP2B6", "CYP3A5"]):
 
     print(CYP_gene, "CYP____________")
