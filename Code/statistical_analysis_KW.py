@@ -13,7 +13,6 @@ from import_functions import remove_outliers
 from import_functions import calculate_adjusted_dosage
 from import_functions import update_summary_statistics
 from import_functions import store_feature_importance
-from import_functions import store_statistical_results
 from import_functions import process_person
 
 import pandas as pd
