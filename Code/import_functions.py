@@ -54,7 +54,7 @@ def clean_pgx_data(file_path):
 
     # Remove rows where 'standard_concept_name_drug' contains '/'
     df = df[~df['standard_concept_name_drug'].str.contains(r'\s/\s', na=False)]
-
+    
     # Map 'sex_at_birth' values to numeric
     df['sex_at_birth'] = df['sex_at_birth'].replace({'Female': 0.0, 'Male': 1.0})
 
@@ -122,7 +122,7 @@ def update_summary_statistics(mean_dose_per_day, CYP_drug, CYP_gene, drug_name, 
     min_dose = mean_dose_per_day["dose_per_day"].min()
     max_dose = mean_dose_per_day["dose_per_day"].max()
     
-    summary_stats.loc[len(summary_stats)] = [CYP_drug, CYP_gene, drug_name, median_dose, sd_dose, min_dose, max_dose, subset]
+    summary_stats.loc[len(summary_stats)] = [CYP_drug, CYP_gene, drug_name, median_dose, sd_dose, min_dose, max_dose,subset]
     
     return summary_stats
 
@@ -137,7 +137,7 @@ def store_feature_importance(model, CYP_drug, CYP_gene, drug_name, pca_columns, 
         "BMI_p": model.pvalues.get("BMI", None),
         "BMI_beta": model.params.get("BMI", None),
         "age_calculated_years_p": model.pvalues.get("age_calculated_years", None),
-        "age_calculated_years_beta": model.params.get("age_calculated_years", None)
+        "age_calculated_years_beta": model.params.get("age_calculated_years", None),
         "subset":subset
     }
 
@@ -148,8 +148,9 @@ def store_feature_importance(model, CYP_drug, CYP_gene, drug_name, pca_columns, 
 
     # Append new row to feature_importance DataFrame
     return pd.concat([feature_importance, pd.DataFrame([new_row])], ignore_index=True)
-
+        
 def process_person(df):
+    
     df_sorted = df.sort_values("drug_exposure_end_datetime", ascending=False).reset_index(drop=True)
     
     if len(df_sorted) < 5:
@@ -177,19 +178,3 @@ def process_person(df):
     ], ignore_index=True)
 
     return final_rows
-
-def store_statistical_results(mean_dose_per_day, CYP_drug_modified, CYP_gene, drug_name, data_stat):
-    """ Perform Kruskal-Wallis test and store statistical results if sufficient data is available. """
-    participants = len(mean_dose_per_day)
-    metabolizer_groups_str = ", ".join(map(str, mean_dose_per_day["metabolizer_group"].unique()))
-    
-    if participants >= 50:
-        p_value, statistic = perform_kruskal_test(mean_dose_per_day.groupby("metabolizer_group"), 3)
-        data_stat.loc[len(data_stat)] = [CYP_drug_modified, CYP_gene, drug_name, p_value, statistic,
-                                         len(mean_dose_per_day["metabolizer_group"].unique()), 
-                                         participants, "3_KW",
-                                         metabolizer_groups_str]
-    else:
-        data_stat.loc[len(data_stat), :] = [CYP_drug_modified, CYP_gene, drug_name, "Skipped", "Skipped", 
-                                            "Skipped", participants, "Skipped", metabolizer_groups_str]
-        
