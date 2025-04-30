@@ -238,7 +238,7 @@ for subset in ["all", "White", "Black or African American","Hispanic or Latino" 
 
                     # Compute summary statistics **after filtering**
                     if not mean_dose_per_day.empty:
-                        summary_stats= update_summary_statistics(mean_dose_per_day, CYP_drug_modified, CYP_gene, drug_name, summary_stats)
+                        summary_stats= update_summary_statistics(mean_dose_per_day, CYP_drug_modified, CYP_gene, drug_name, summary_stats, subset)
 
                     # ------- Covariate adjusted Drug Dosage 
                     mean_dose_per_day, model = calculate_adjusted_dosage(mean_dose_per_day, pca_columns) 
