@@ -58,14 +58,14 @@ data_stat = pd.DataFrame(columns=["CYP_drug", "CYP_gene", "drug_name", "p_value"
                                   "statistical_test", "metabolizer_groups", "subset"])
 
 summary_stats = pd.DataFrame(columns=["CYP_drug", "CYP_gene", "drug_name", "median_dose", "SD_dose", 
-                                      "min_dose", "max_dose", "subset])
+                                      "min_dose", "max_dose","subset"])
 
 data_to_export = pd.DataFrame()
 
 # Define feature_importance DataFrame with both p-values and beta coefficients
 feature_importance_columns = [
     "CYP_drug", "CYP_gene", "drug_name", "sex_at_birth_p", "sex_at_birth_beta", "BMI_p", "BMI_beta",
-    "age_calculated_years_p", "age_calculated_years_beta"
+    "age_calculated_years_p", "age_calculated_years_beta", "subset"
 ]
 
 for pca_col in pca_columns:
@@ -137,6 +137,9 @@ for enzyme, drugs in drug_dictionary.items():
 
 
 # ----------------- STATISTICAL TESTING ----------------
+
+# ----------------- STATISTICAL TESTING ----------------
+
 for subset in ["all", "White", "Black or African American","Hispanic or Latino" ]:
     
     if subset == "Hispanic or Latino":
@@ -238,14 +241,14 @@ for subset in ["all", "White", "Black or African American","Hispanic or Latino" 
 
                     # Compute summary statistics **after filtering**
                     if not mean_dose_per_day.empty:
-                        summary_stats= update_summary_statistics(mean_dose_per_day, CYP_drug_modified, CYP_gene, drug_name, summary_stats, subset)
+                        summary_stats= update_summary_statistics(mean_dose_per_day, CYP_drug_modified, CYP_gene, drug_name, summary_stats,subset)
 
                     # ------- Covariate adjusted Drug Dosage 
                     mean_dose_per_day, model = calculate_adjusted_dosage(mean_dose_per_day, pca_columns) 
 
                     # Store p-values and beta coefficients
                     feature_importance = store_feature_importance(model, CYP_drug_modified, CYP_gene, drug_name, pca_columns, 
-                                                                  feature_importance)
+                                                                  feature_importance, subset)
 
                     data_to_export = pd.concat([data_to_export, mean_dose_per_day], ignore_index=True)
 
