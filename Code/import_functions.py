@@ -126,7 +126,7 @@ def update_summary_statistics(mean_dose_per_day, CYP_drug, CYP_gene, drug_name, 
     
     return summary_stats
 
-def store_feature_importance(model, CYP_drug, CYP_gene, drug_name, pca_columns, feature_importance):
+def store_feature_importance(model, CYP_drug, CYP_gene, drug_name, pca_columns, feature_importance, subset):
     """ Extracts p-values and beta coefficients from a regression model and appends them to feature_importance. """
     new_row = {
         "CYP_drug": CYP_drug, 
@@ -138,6 +138,7 @@ def store_feature_importance(model, CYP_drug, CYP_gene, drug_name, pca_columns, 
         "BMI_beta": model.params.get("BMI", None),
         "age_calculated_years_p": model.pvalues.get("age_calculated_years", None),
         "age_calculated_years_beta": model.params.get("age_calculated_years", None)
+        "subset":subset
     }
 
     # Add PCA feature p-values and beta coefficients dynamically
