@@ -137,17 +137,15 @@ for enzyme, drugs in drug_dictionary.items():
 
 # ----------------- STATISTICAL TESTING ----------------
 
-# ----------------- STATISTICAL TESTING ----------------
-
 for subset in ["all", "White", "Black or African American","Hispanic or Latino" ]:
-    
+
     if subset == "Hispanic or Latino":
         df_race = df.dropna(subset=["ethnicity"]).copy()
         df_race = df_race[df_race["ethnicity"] == subset].copy()
 
     elif subset in ["White", "Black or African American"]:
-        df_race = df.dropna(subset=["self_reported_category"]).copy()
-        df_race = df_race[df_race["self_reported_category"] == subset].copy()
+        df_race = df.dropna(subset=["race"]).copy()
+        df_race = df_race[df_race["race"] == subset].copy()
 
     elif subset == "all":
         df_race = df.copy()
