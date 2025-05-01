@@ -33,7 +33,7 @@ drug_dictionary <- list(
     "abrocitinib", "rimegepant", "acenocoumarol", "warfarin"
   ),
   CYP2D6 = c(
-    "ondansetron", "acetaminophen", "dextromethorphan", "opium", "quinine",
+    "ondansetron", "dextromethorphan", "quinine",
     "eliglustat", "nefazodone", "gefitinib", "terbinafine", "rucaparib",
     "oxycodone", "metoclopramide", "vernakalant", "desvenlafaxine", "fluoxetine",
     "tolperisone", "flibanserin", "amphetamine", "thioridazine", "paliperidone",
