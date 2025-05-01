@@ -95,7 +95,7 @@ drug_dictionary= {
         'abrocitinib', 'rimegepant', 'acenocoumarol', 'warfarin'
     ],
     'CYP2D6': [
-        'ondansetron', 'acetaminophen', 'dextromethorphan', 'opium', 'quinine',
+        'ondansetron', 'dextromethorphan', 'quinine',
         'eliglustat', 'nefazodone', 'gefitinib', 'terbinafine', 'rucaparib',
         'oxycodone', 'metoclopramide', 'vernakalant', 'desvenlafaxine', 'fluoxetine',
         'tolperisone', 'flibanserin', 'amphetamine', 'thioridazine', 'paliperidone',
