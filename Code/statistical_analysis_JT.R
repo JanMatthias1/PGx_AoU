@@ -125,9 +125,7 @@ for (subset_loop in c("all","White", "Black or African American", "Hispanic or L
         
         # Filter the drug 
         df_drug <- df_filtered %>% filter(drug_name == drug)
-        
-        #df_drug <- df_filtered %>% filter(drug_name == drug & drug_CYP == CYP_drug_modified)
-        # checked this also works the same
+
         # Check if the drug is missing from the dataset
         if (nrow(df_drug) == 0) {
           cat("Skipping drug:", drug, "- not found in dataset\n")
