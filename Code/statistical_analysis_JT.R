@@ -163,7 +163,7 @@ for (subset_loop in c("all","White", "Black or African American", "Hispanic or L
           summarise(count = n(), dose_values = list(dose_per_day), .groups = "drop")
         
         # Get distinct count of metabolizers
-        number_of_metabolizer_3 <- n_distinct(df_filtered$metabolizer_group)
+        number_of_metabolizer_3 <- n_distinct(df_drug$metabolizer_group)
         
         groups_3 <- grouped_3$dose_values
         
