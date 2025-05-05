@@ -13,55 +13,51 @@ set.seed(42)  # Set seed for reproducibility
 
 # ---------------- DRUG DICTIONARY ------------
 drug_dictionary <- list(
-  CYP1A2 = c("olanzapine", "rucaparib"),
-  CYP27A1 = c("cholic acid"),
-  CYP2A6 = c("letrozole"),
-  CYP2B6 = c("prasugrel", "ospemifene", "efavirenz"),
+  CYP2B6 = c("sertraline", "efavirenz", "methadone", "bupropion", "nevirapine"),
   CYP2C19 = c(
-    "citalopram", "belzutifan", "pantoprazole", "voriconazole", "diazepam",
-    "axitinib", "amitriptyline", "ticagrelor", "lacosamide", "nelfinavir",
-    "prasugrel", "phenytoin", "atazanavir", "clobazam", "doxepin",
-    "esomeprazole", "brivaracetam", "flibanserin", "moclobemide", "abrocitinib",
-    "dexlansoprazole", "lansoprazole", "mavacamten", "rabeprazole",
-    "carisoprodol", "omeprazole", "formoterol", "escitalopram", "clopidogrel"
+    "rabeprazole", "trimipramine", "clobazam", "clomipramine", "esomeprazole",
+    "lansoprazole", "sertraline", "venlafaxine", "duloxetine", "fluvoxamine",
+    "escitalopram", "brivaracetam", "amitriptyline", "imipramine", "omeprazole",
+    "dexlansoprazole", "carisoprodol", "citalopram", "doxepin", "flibanserin",
+    "fluoxetine", "paroxetine", "clopidogrel", "diazepam", "vortioxetine",
+    "pantoprazole", "voriconazole"
   ),
+  CYP2C8 = c("rosiglitazone", "ibuprofen", "diclofenac"),
   CYP2C9 = c(
-    "fosphenytoin", "siponimod", "dronabinol", "losartan", "meloxicam",
-    "avatrombopag", "prasugrel", "phenytoin", "brivaracetam", "flurbiprofen",
-    "lesinurad", "erdafitinib", "ospemifene", "nateglinide", "etrasimod",
-    "flibanserin", "celecoxib", "piroxicam", "glimepiride", "glyburide",
-    "abrocitinib", "rimegepant", "acenocoumarol", "warfarin"
+    "fosphenytoin", "lornoxicam", "ibuprofen", "aspirin", "celecoxib", "phenytoin",
+    "flurbiprofen", "warfarin", "meloxicam", "erdafitinib", "piroxicam",
+    "fluvastatin", "lesinurad", "naproxen", "aceclofenac", "siponimod",
+    "nabumetone", "dronabinol", "tenoxicam", "lumiracoxib", "flibanserin",
+    "diclofenac", "avatrombopag", "acenocoumarol", "indomethacin"
   ),
   CYP2D6 = c(
-    "ondansetron", "dextromethorphan", "quinine",
-    "eliglustat", "nefazodone", "gefitinib", "terbinafine", "rucaparib",
-    "oxycodone", "metoclopramide", "vernakalant", "desvenlafaxine", "fluoxetine",
-    "tolperisone", "flibanserin", "amphetamine", "thioridazine", "paliperidone",
-    "oliceridine", "cevimeline", "deutetrabenazine", "formoterol", "escitalopram",
-    "mirabegron", "tamoxifen", "duloxetine", "risperidone", "modafinil",
-    "donepezil", "aripiprazole lauroxil", "clomipramine", "umeclidinium",
-    "pitolisant", "dapoxetine", "ritonavir", "atomoxetine", "sertindole",
-    "timolol", "codeine", "upadacitinib", "vortioxetine", "ibrutinib",
-    "desipramine", "tiotropium", "eletriptan", "olanzapine", "carvedilol",
-    "protriptyline", "cariprazine", "citalopram", "meclizine", "nebivolol",
-    "clozapine", "valbenazine", "propafenone", "amoxapine", "primaquine",
-    "fesoterodine", "paroxetine", "iloperidone", "brexpiprazole", "palonosetron",
-    "metoprolol", "tamsulosin", "fluvoxamine", "propranolol", "aripiprazole",
-    "arformoterol", "tolterodine", "dronedarone", "nortriptyline", "galantamine",
-    "tetrabenazine", "zuclopenthixol", "doxepin", "tramadol", "bupropion",
-    "venlafaxine", "trimipramine", "viloxazine", "perphenazine", "lofexidine",
-    "darifenacin", "imipramine", "pimozide", "ranolazine", "quinidine",
-    "amitriptyline"
+    "lofexidine", "palonosetron", "atomoxetine", "ondansetron", "oliceridine",
+    "quinidine", "flecainide", "dolasetron", "fluvoxamine", "aripiprazole",
+    "escitalopram", "nebivolol", "galantamine", "amitriptyline", "darifenacin",
+    "tolterodine", "nortriptyline", "eliglustat", "iloperidone", "zuclopenthixol",
+    "propranolol", "fesoterodine", "paroxetine", "flibanserin", "pimozide",
+    "tamsulosin", "amphetamine", "oxycodone", "codeine", "metoprolol",
+    "propafenone", "citalopram", "mirabegron", "timolol", "dextromethorphan",
+    "hydrocodone", "terbinafine", "clomipramine", "valbenazine", "methadone",
+    "mirtazapine", "methylphenidate", "carvedilol", "desipramine", "tropisetron",
+    "amoxapine", "aripiprazole lauroxil", "metoclopramide", "thioridazine",
+    "bisoprolol", "donepezil", "imipramine", "tramadol", "protriptyline",
+    "doxepin", "betaxolol", "pitolisant", "acebutolol", "vortioxetine",
+    "perphenazine", "trimipramine", "tamoxifen", "modafinil", "sertraline",
+    "venlafaxine", "haloperidol", "gefitinib", "duloxetine", "clozapine",
+    "quinine", "tetrabenazine", "risperidone", "meclizine", "deutetrabenazine",
+    "fluoxetine", "brexpiprazole", "labetalol", "cevimeline"
   ),
   CYP3A4 = c(
-    "dronedarone", "darunavir", "fosamprenavir", "diazepam", "losartan",
-    "zonisamide", "sunitinib", "nelfinavir", "ruxolitinib", "dolutegravir",
-    "cabazitaxel", "lonafarnib", "ritonavir", "sirolimus", "indinavir",
-    "posaconazole", "tamsulosin", "tacrolimus", "tipranavir", "tolterodine",
-    "telithromycin", "ivabradine"
+    "simvastatin", "tacrolimus", "atorvastatin", "fluvastatin",
+    "lovastatin", "rosuvastatin", "pravastatin", "pitavastatin"
   ),
-  CYP3A5 = c("nelfinavir", "prasugrel", "maraviroc", "dolutegravir", "tacrolimus"),
-  CYP7A1 = c("cholic acid")
+  CYP3A5 = c(
+    "simvastatin", "tacrolimus", "sirolimus", "atorvastatin",
+    "fluvastatin", "lovastatin", "rosuvastatin", "midazolam",
+    "cyclosporine", "pravastatin", "pitavastatin"
+  ),
+  CYP4F2 = c("warfarin", "acenocoumarol", "phenprocoumon")
 )
 
 # Populate the mapping
