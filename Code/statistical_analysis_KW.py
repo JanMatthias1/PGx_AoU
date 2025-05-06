@@ -179,7 +179,10 @@ for subset in ["all", "White", "Black or African American","Hispanic or Latino" 
 
                 # Create a dataframe of patients on the drug
                 df_first_drug = df_copy[df_copy['drug_name'].str.contains(pattern, case=False, na=False)].copy()
-
+              
+                if drug_name == "aripiprazole":
+                  df_first_drug = df_first_drug[~df_first_drug["standard_concept_name_drug"].str.contains("lauroxil", case=False, na=False)]
+            
                 # ------------- filter for at least 5 observations
                 # Optimize filtering using .value_counts()
                 valid_persons = df_first_drug['person_id'].value_counts()
