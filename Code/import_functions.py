@@ -96,7 +96,7 @@ def remove_outliers(df, column="dose_per_day", lower_quantile=0.25, upper_quanti
     df_filtered = df[
         (df[column] >= Q1 - iqr_multiplier * IQR) &
         (df[column] <= Q3 + iqr_multiplier * IQR)
-    ].drop_duplicates(subset='person_id', keep='last').copy()
+    ]
 
     return df_filtered
 
