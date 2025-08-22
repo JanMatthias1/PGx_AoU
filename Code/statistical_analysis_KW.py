@@ -54,7 +54,7 @@ df = df.dropna(subset=["person_id", "sex_at_birth", "BMI", "age_calculated_years
 
 data_stat = pd.DataFrame(columns=["CYP_drug", "CYP_gene", "drug_name", "p_value", "stat_test", 
                                   "number_of_metabolizer", "number_people", 
-                                  "statistical_test", "metabolizer_groups", "subset"])
+                                  "statistical_test", "metabolizer_groups", "subset", "fills_summary"])
 
 summary_stats = pd.DataFrame(columns=["CYP_drug", "CYP_gene", "drug_name", "median_dose", "SD_dose", 
                                       "min_dose", "max_dose","subset"])
