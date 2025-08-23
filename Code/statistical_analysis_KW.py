@@ -189,16 +189,6 @@ for subset in ["all", "White", "Black or African American","Hispanic or Latino" 
                 valid_persons = valid_persons[valid_persons >= 5].index
                 df_filtered = df_first_drug[df_first_drug['person_id'].isin(valid_persons)]
 
-                # --- Median (IQR) number of fills across patients in this cohort
-                if df_filtered.empty:
-                    fills_summary = np.nan
-                else:
-                    counts_valid = df_filtered['person_id'].value_counts()
-                    median_fills = int(counts_valid.median())
-                    q1_fills = int(counts_valid.quantile(0.25))
-                    q3_fills = int(counts_valid.quantile(0.75))
-                    fills_summary = f"{median_fills} ({q1_fills}–{q3_fills})"
-
                 # Apply per person
                 final_rows = df_filtered.groupby("person_id").apply(process_person).reset_index(drop=True)
 
@@ -242,6 +232,19 @@ for subset in ["all", "White", "Black or African American","Hispanic or Latino" 
 
                 check_grouped_data = mean_dose_per_day.groupby("metabolizer_group")["dose_per_day"]
                 has_variation = all(group.std() > 0 for _, group in check_grouped_data)
+
+                # Restrict fills summary to participants in the final cohort
+                if mean_dose_per_day.empty:
+                    fills_summary = np.nan
+                else:
+                    valid_ids = mean_dose_per_day["person_id"].unique()
+                    counts_final = df_filtered[df_filtered["person_id"].isin(valid_ids)]["person_id"].value_counts()
+
+                    median_fills = int(counts_final.median())
+                    q1_fills = int(counts_final.quantile(0.25))
+                    q3_fills = int(counts_final.quantile(0.75))
+                    fills_summary = f"{median_fills} ({q1_fills}–{q3_fills})"
+
 
                 if participants >= 50 and has_variation:
 
