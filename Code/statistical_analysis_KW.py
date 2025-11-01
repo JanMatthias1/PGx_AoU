@@ -279,7 +279,7 @@ for subset in ["all", "White", "Black or African American","Hispanic or Latino" 
                     data_stat.loc[len(data_stat)] = [CYP_drug_modified, CYP_gene, drug_name, p_value, statistic,
                                                      len(mean_dose_per_day["metabolizer_group"].unique()), 
                                                      participants, test_type,
-                                                     metabolizer_groups_str, subset]
+                                                     metabolizer_groups_str, subset, fills_summary]
 
                 else:
                     p_value = "Skipped"  # Not enough data for the test
@@ -288,7 +288,7 @@ for subset in ["all", "White", "Black or African American","Hispanic or Latino" 
                     number_of_metabolizer= "Skipped"
                     data_stat.loc[len(data_stat)] = [CYP_drug_modified, CYP_gene, drug_name, p_value, statistic, 
                                                         number_of_metabolizer, participants, "Skipped",
-                                                        metabolizer_groups_str, subset]
+                                                        metabolizer_groups_str, subset, fills_summary]
                 
 
  #----------------- SIGNIFICANT P-VALUES ----------------
