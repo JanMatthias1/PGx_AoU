@@ -7,7 +7,7 @@ The All of Us research program, a national longitudinal study conducted by the U
 Jan Matthias, Maria J. Falaguera, Russ B. Altman
 
 **Paper:**
-[Paper](TBS)
+[Paper](https://ascpt.onlinelibrary.wiley.com/doi/10.1111/cts.70406)
 
 # Contact:
 Questions or comments related to the manuscript:
