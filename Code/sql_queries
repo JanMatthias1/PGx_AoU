@@ -1,5 +1,4 @@
 # This query represents dataset "drug_data_set_CPIC" for domain "drug" and was generated for All of Us Controlled Tier Dataset v8
-  
 dataset_56822847_drug_sql = """
     SELECT
         d_exposure.person_id,
@@ -81,8 +80,122 @@ dataset_56822847_drug_sql = """
             `""" + os.environ["WORKSPACE_CDR"] + """.concept` d_source_concept 
                 ON d_exposure.drug_source_concept_id = d_source_concept.concept_id"""
 
-df_new = pandas.read_gbq(
-    dataset_56822847_drug_sql,
-    dialect="standard",
-    use_bqstorage_api=("BIGQUERY_STORAGE_API_ENABLED" in os.environ),
-    progress_bar_type="tqdm_notebook")
+# This query represents dataset "demographics_self_reported" for domain "person" and was generated for All of Us Controlled Tier Dataset v8
+dataset_10385880_person_sql = """
+    SELECT
+        person.person_id,
+        
+        p_gender_concept.concept_name as gender,
+        person.birth_datetime as date_of_birth,
+
+        p_race_concept.concept_name as race,
+
+        p_ethnicity_concept.concept_name as ethnicity,
+
+        p_sex_at_birth_concept.concept_name as sex_at_birth,
+
+        p_self_reported_category_concept.concept_name as self_reported_category 
+    FROM
+        `""" + os.environ["WORKSPACE_CDR"] + """.person` person 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` p_gender_concept 
+            ON person.gender_concept_id = p_gender_concept.concept_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` p_race_concept 
+            ON person.race_concept_id = p_race_concept.concept_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` p_ethnicity_concept 
+            ON person.ethnicity_concept_id = p_ethnicity_concept.concept_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` p_sex_at_birth_concept 
+            ON person.sex_at_birth_concept_id = p_sex_at_birth_concept.concept_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` p_self_reported_category_concept 
+            ON person.self_reported_category_concept_id = p_self_reported_category_concept.concept_id"""
+
+# BMI, weight, height of population
+# This query represents dataset "data_BMI_weight_height" for domain "measurement" and was generated for All of Us Controlled Tier Dataset v8
+dataset_42283161_measurement_sql = """
+    SELECT
+        measurement.person_id,
+        measurement.measurement_concept_id,
+        m_standard_concept.concept_name as standard_concept_name,
+        m_standard_concept.concept_code as standard_concept_code,
+        m_standard_concept.vocabulary_id as standard_vocabulary,
+        measurement.measurement_datetime,
+        measurement.measurement_type_concept_id,
+        m_type.concept_name as measurement_type_concept_name,
+        measurement.operator_concept_id,
+        m_operator.concept_name as operator_concept_name,
+        measurement.value_as_number,
+        measurement.value_as_concept_id,
+        m_value.concept_name as value_as_concept_name,
+        measurement.unit_concept_id,
+        m_unit.concept_name as unit_concept_name,
+        measurement.range_low,
+        measurement.range_high,
+        measurement.visit_occurrence_id,
+        m_visit.concept_name as visit_occurrence_concept_name,
+        measurement.measurement_source_value,
+        measurement.measurement_source_concept_id,
+        m_source_concept.concept_name as source_concept_name,
+        m_source_concept.concept_code as source_concept_code,
+        m_source_concept.vocabulary_id as source_vocabulary,
+        measurement.unit_source_value,
+        measurement.value_source_value 
+    FROM
+        ( SELECT
+            * 
+        FROM
+            `""" + os.environ["WORKSPACE_CDR"] + """.measurement` measurement 
+        WHERE
+            (
+                measurement_source_concept_id IN (SELECT
+                    DISTINCT c.concept_id 
+                FROM
+                    `""" + os.environ["WORKSPACE_CDR"] + """.cb_criteria` c 
+                JOIN
+                    (SELECT
+                        CAST(cr.id as string) AS id       
+                    FROM
+                        `""" + os.environ["WORKSPACE_CDR"] + """.cb_criteria` cr       
+                    WHERE
+                        concept_id IN (903121, 903124, 903133)       
+                        AND full_text LIKE '%_rank1]%'      ) a 
+                        ON (c.path LIKE CONCAT('%.', a.id, '.%') 
+                        OR c.path LIKE CONCAT('%.', a.id) 
+                        OR c.path LIKE CONCAT(a.id, '.%') 
+                        OR c.path = a.id) 
+                WHERE
+                    is_standard = 0 
+                    AND is_selectable = 1)
+            )) measurement 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` m_standard_concept 
+            ON measurement.measurement_concept_id = m_standard_concept.concept_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` m_type 
+            ON measurement.measurement_type_concept_id = m_type.concept_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` m_operator 
+            ON measurement.operator_concept_id = m_operator.concept_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` m_value 
+            ON measurement.value_as_concept_id = m_value.concept_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` m_unit 
+            ON measurement.unit_concept_id = m_unit.concept_id 
+    LEFT JOIn
+        `""" + os.environ["WORKSPACE_CDR"] + """.visit_occurrence` v 
+            ON measurement.visit_occurrence_id = v.visit_occurrence_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` m_visit 
+            ON v.visit_concept_id = m_visit.concept_id 
+    LEFT JOIN
+        `""" + os.environ["WORKSPACE_CDR"] + """.concept` m_source_concept 
+            ON measurement.measurement_source_concept_id = m_source_concept.concept_id"""
+
+
+
+
+
